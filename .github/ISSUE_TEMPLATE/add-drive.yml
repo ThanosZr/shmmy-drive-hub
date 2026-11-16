@@ -1,0 +1,52 @@
+name: Προσθήκη ή ενημέρωση Drive
+description: Πρότεινε έναν δημόσιο φάκελο με πραγματικά αντίγραφα μαθημάτων.
+title: "[Drive] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Πρότεινε έναν φάκελο για τον κοινό κατάλογο. Τα στοιχεία του issue είναι δημόσια.
+        Ο διαχειριστής ελέγχει τον φάκελο πριν τον προσθέσει στη σελίδα.
+        Χρησιμοποίησε «Οποιοσδήποτε διαθέτει τον σύνδεσμο → Αναγνώστης», με δυνατότητα λήψης.
+        Βάλε το συμπληρωμένο BACKUP-INFO.md στη ρίζα του Drive.
+  - type: input
+    id: name
+    attributes:
+      label: Δημόσιο όνομα αντιγράφου
+      placeholder: π.χ. ΣΗΜΜΥ Backup 01
+    validations:
+      required: true
+  - type: input
+    id: folder
+    attributes:
+      label: Σύνδεσμος φακέλου Google Drive
+      placeholder: https://drive.google.com/drive/folders/...
+    validations:
+      required: true
+  - type: textarea
+    id: contents
+    attributes:
+      label: Μαθήματα και περιεχόμενα
+      description: Γράψε ένα μάθημα ανά γραμμή και ποιες κατηγορίες αρχείων περιλαμβάνονται.
+    validations:
+      required: true
+  - type: input
+    id: download-date
+    attributes:
+      label: Ημερομηνία ολοκλήρωσης λήψης
+      description: YYYY-MM-DD ή Άγνωστη.
+  - type: input
+    id: source-through
+    attributes:
+      label: Κάλυψη πηγής έως
+      description: YYYY-MM-DD ή Άγνωστη. Διαφορετικό από την ημερομηνία λήψης.
+  - type: input
+    id: upload-date
+    attributes:
+      label: Ημερομηνία ολοκλήρωσης ανάρτησης στο Drive
+      description: YYYY-MM-DD ή Άγνωστη.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Περιγραφή, μέγεθος και γνωστές ελλείψεις
+      description: Πρόσθεσε όσα γνωρίζεις. Αν πρόκειται για ενημέρωση, σημείωσε ποια καταχώριση αφορά.
