@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Βρες αντίγραφα σημειώσεων και παλιών θεμάτων ΣΗΜΜΥ ΕΜΠ σε Google Drive της κοινότητας.">
+  <meta name="theme-color" content="#173452">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>ΣΗΜΜΥ · Backup Drives</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#catalogue">Μετάβαση στα Drive</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./" aria-label="ΣΗΜΜΥ Backup Drives — αρχική">
+        <span class="brand-mark" aria-hidden="true">Σ</span>
+        <span><strong>ΣΗΜΜΥ</strong><span class="brand-caption">Backup Drives</span></span>
+      </a>
+      <a class="repository-link" href="https://github.com/ThanosZr/shmmy-drive-hub" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow"><span class="community-dot" aria-hidden="true"></span> Αρχείο της κοινότητας</p>
+      <h1 id="page-title">Τα Drive της ΣΗΜΜΥ,<br>σε ένα μέρος.</h1>
+      <p class="intro-text">Αντίγραφα σημειώσεων και παλιών θεμάτων σε φακέλους Google Drive. Βρες το υλικό που σε ενδιαφέρει και άνοιξε τον φάκελο για προβολή ή λήψη.</p>
+      <p id="totals" class="totals" hidden></p>
+    </section>
+
+    <section id="catalogue" class="catalogue" aria-labelledby="catalogue-title" tabindex="-1">
+      <div class="section-heading">
+        <h2 id="catalogue-title">Διαθέσιμα Drive</h2>
+        <span class="section-note">Οι ημερομηνίες δηλώνονται από τους υπεύθυνους των αντιγράφων.</span>
+      </div>
+
+      <div id="toolbar" class="toolbar" hidden>
+        <div class="search-group">
+          <label for="search">Αναζήτηση μαθήματος ή Drive</label>
+          <div class="search-box">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.7" cy="10.7" r="6.7"></circle><path d="m16 16 4.5 4.5"></path></svg>
+            <input id="search" type="search" placeholder="π.χ. Βάσεις Δεδομένων" autocomplete="off" spellcheck="false" maxlength="200" disabled>
+          </div>
+        </div>
+        <div class="sort-group">
+          <label for="sort">Ταξινόμηση</label>
+          <select id="sort" disabled>
+            <option value="recent">Πιο πρόσφατη λήψη</option>
+            <option value="name">Όνομα Drive</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="status" class="result-status" role="status" aria-live="polite" aria-atomic="true">Φόρτωση καταλόγου…</p>
+      <ul id="drive-list" class="drive-list" aria-label="Κατάλογος διαθέσιμων Drive"></ul>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <svg class="empty-icon" aria-hidden="true" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 19a5 5 0 0 1 5-5h14l6 7h18a5 5 0 0 1 5 5v21a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z"></path><path d="M8 28h48M25 39h14M32 32v14"></path></svg>
+        <h3 id="empty-title">Ο κατάλογος ετοιμάζεται</h3>
+        <p id="empty-description">Δεν έχει προστεθεί δημόσιος φάκελος ακόμη. Οι διαθέσιμοι σύνδεσμοι θα εμφανιστούν εδώ.</p>
+        <button id="clear-search" class="button button-secondary" type="button" hidden>Καθαρισμός αναζήτησης</button>
+      </div>
+
+      <div id="error-state" class="error-state" role="alert" hidden>
+        <h3>Ο κατάλογος δεν φορτώθηκε</h3>
+        <p>Έλεγξε τη σύνδεσή σου και δοκίμασε ξανά. Αν το πρόβλημα συνεχίζεται, ενημέρωσε τους διαχειριστές στο GitHub.</p>
+        <button id="retry" class="button button-secondary" type="button">Δοκίμασε ξανά</button>
+      </div>
+
+      <noscript><p class="error-state">Για να εμφανιστεί ο κατάλογος, ενεργοποίησε τη JavaScript. Μπορείς επίσης να δεις τις καταχωρίσεις στο <a href="https://github.com/ThanosZr/shmmy-drive-hub/blob/main/dist/data/drives.json">αρχείο καταλόγου στο GitHub</a>.</p></noscript>
+    </section>
+
+    <aside class="date-note" aria-labelledby="date-note-title">
+      <div class="note-icon" aria-hidden="true">i</div>
+      <div>
+        <h2 id="date-note-title">Πόσο πρόσφατο είναι το αντίγραφο;</h2>
+        <p>Η <strong>λήψη αντιγράφου</strong> δείχνει πότε κατέβηκαν τα αρχεία. Η <strong>κάλυψη πηγής έως</strong>, όταν είναι γνωστή, δείχνει μέχρι ποια ημερομηνία καλύπτεται η πηγή. Τα άγνωστα στοιχεία δεν υπολογίζονται αυτόματα.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <p><strong>Κρατάς κι εσύ ένα αντίγραφο;</strong><br>Μπορείς να προτείνεις τον δημόσιο φάκελό σου για τον κατάλογο.</p>
+        <div class="footer-links">
+          <a href="https://github.com/ThanosZr/shmmy-drive-hub/issues/new?template=add-drive.yml" target="_blank" rel="noopener noreferrer">Πρότεινε ένα Drive <span aria-hidden="true">↗</span></a>
+          <a href="./BACKUP-INFO.md" download="BACKUP-INFO.md">Πρότυπο BACKUP-INFO.md <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>ΣΗΜΜΥ · Backup Drives · v2.0.0</span>
+        <span>Ανεξάρτητη πρωτοβουλία της κοινότητας. Δεν αποτελεί επίσημη υπηρεσία του ΕΜΠ.</span>
+      </div>
+    </div>
+  </footer>
+
+  <template id="folder-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"></path><path d="M3 10h18"></path></svg></template>
+</body>
+</html>
