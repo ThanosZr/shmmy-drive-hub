@@ -48,13 +48,15 @@ export function parseSubmissionBody(body) {
   return validated;
 }
 
-export function mergeSubmission(catalogue, entry) {
+export function mergeSubmission(catalogue, entry, issueNumber) {
+  if (!Number.isSafeInteger(issueNumber) || issueNumber < 1) throw new Error('Χρειάζεται έγκυρος αριθμός issue για την καταχώριση.');
   const current = validateCatalogue(catalogue);
-  const { id, ...validated } = validateCatalogue({ schemaVersion: 1, drives: [entry] }).drives[0];
-  const index = current.drives.findIndex(drive => drive.id === id);
+  const { id, ...validated } = validateCatalogue({ schemaVersion: 1, drives: [{ ...entry, issueNumber }] }).drives[0];
+  const index = current.drives.findIndex(drive => drive.issueNumber === issueNumber);
   const drives = catalogue.drives.map(drive => ({ ...drive, ...(drive.courses ? { courses: [...drive.courses] } : {}) }));
   if (index < 0) drives.push(validated); else drives[index] = validated;
   const next = { schemaVersion: 1, drives };
   validateCatalogue(next);
   return next;
 }
+
