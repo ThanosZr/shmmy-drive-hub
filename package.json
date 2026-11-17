@@ -1,6 +1,6 @@
 {
   "name": "shmmy-drive-hub",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "type": "module",
   "description": "Κοινός κατάλογος δημόσιων Google Drive με αντίγραφα μαθημάτων ΣΗΜΜΥ ΕΜΠ.",
