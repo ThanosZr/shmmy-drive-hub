@@ -1,4 +1,17 @@
 {
   "schemaVersion": 1,
-  "drives": []
+  "drives": [
+    {
+      "name": "SHMMY FORUM BACKUP",
+      "url": "https://drive.google.com/drive/folders/1BzycuXkFd4s5vR_gMJgs8yxeQ1O4twjI",
+      "description": "",
+      "courses": [
+        "Σημειώσεις και παλιά θέματα μαθημάτων της ΣΗΜΜΥ ΕΜΠ."
+      ],
+      "backupDate": "2026-11-17",
+      "sourceThrough": "2026-11-17",
+      "uploadedDate": "2026-11-17",
+      "sizeBytes": null
+    }
+  ]
 }
