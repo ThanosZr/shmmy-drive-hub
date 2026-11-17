@@ -1,5 +1,5 @@
 import { readFile, readdir, access } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { validateCatalogue } from '../dist/js/core.mjs';
@@ -31,9 +31,10 @@ for (const modulePath of modules) {
   if (check.status !== 0) throw new Error(check.stderr || ('Αποτυχία σύνταξης: ' + modulePath));
   const source = await readFile(modulePath, 'utf8');
   for (const match of source.matchAll(/^import .*? from ['"](\.[^'"]+)['"]/gm)) {
-    await access(path.resolve(path.dirname(modulePath), match[1]));
+    await access(fileURLToPath(new URL(match[1], pathToFileURL(modulePath))));
   }
 }
 await access(path.join(site, 'BACKUP-INFO.md'));
 await access(path.join(site, '.nojekyll'));
 console.log('OK: ' + catalogue.drives.length + ' πραγματικές καταχωρίσεις, ' + modules.length + ' JavaScript modules και τοπικοί σύνδεσμοι.');
+

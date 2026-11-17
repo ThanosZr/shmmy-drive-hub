@@ -54,14 +54,38 @@ test('rejects dates pasted in courses, missing data, duplicate headings, unsafe 
   BODY.replace('Άγνωστη', '2026-11-17')
  ]) assert.throws(() => parseSubmissionBody(body));
 });
-test('updates an existing folder without duplication or mutating the input', () => {
+test('updates the same issue without duplication or mutating the input even when its folder changes', () => {
  const entry = parseSubmissionBody(BODY);
- const first = mergeSubmission({ schemaVersion: 1, drives: [] }, entry);
- const next = mergeSubmission(first, { ...entry, name: 'Νεότερο' });
+ const first = mergeSubmission({ schemaVersion: 1, drives: [] }, entry, 3);
+ const next = mergeSubmission(first, { ...entry, name: 'Νεότερο', url: entry.url.replace('abcdefghijklm', 'otherfolder123') }, 3);
  assert.equal(next.drives.length, 1);
  assert.equal(first.drives[0].name, entry.name);
  assert.equal(next.drives[0].name, 'Νεότερο');
+ assert.equal(next.drives[0].url.includes('otherfolder123'), true);
+ assert.equal(next.drives[0].issueNumber, 3);
  assert.doesNotThrow(() => validateCatalogue(next));
+});
+
+test('a new issue for the same folder is independent and repeated approval is idempotent', () => {
+ const entry = parseSubmissionBody(BODY);
+ const first = mergeSubmission({ schemaVersion: 1, drives: [] }, entry, 3);
+ const second = mergeSubmission(first, { ...entry, name: 'Δεύτερο αντίγραφο' }, 5);
+ assert.deepEqual(second.drives.map(item => item.name), [entry.name, 'Δεύτερο αντίγραφο']);
+ assert.deepEqual(second.drives.map(item => item.issueNumber), [3, 5]);
+ assert.deepEqual(mergeSubmission(second, { ...entry, name: 'Δεύτερο αντίγραφο' }, 5), second);
+ const updated = mergeSubmission(second, { ...entry, name: 'Ενημέρωση πρώτου' }, 3);
+ assert.equal(updated.drives.length, 2);
+ assert.equal(updated.drives[1].name, 'Δεύτερο αντίγραφο');
+ assert.equal(second.drives[0].name, entry.name);
+});
+
+test('new approvals preserve manual entries and require a valid issue identity', () => {
+ const entry = parseSubmissionBody(BODY);
+ const original = { schemaVersion: 1, drives: [entry] };
+ const result = mergeSubmission(original, { ...entry, name: 'Ξεχωριστή υποβολή' }, 5);
+ assert.equal(result.drives.length, 2);
+ assert.deepEqual(result.drives[0], original.drives[0]);
+ for (const number of [undefined, null, 0, -1, 1.5, '5']) assert.throws(() => mergeSubmission(original, entry, number));
 });
 test('read-only users cannot read issue data, publish, close, or comment', async () => {
  const h = harness({ permission: 'read' });
@@ -88,7 +112,21 @@ test('publishes using the current catalogue SHA and returns the new commit for P
  assert.equal(h.state.writes[0].sha, 'a'.repeat(40));
  const data = JSON.parse(Buffer.from(h.state.writes[0].content, 'base64').toString('utf8'));
  assert.equal(validateCatalogue(data).drives.length, 1);
+ assert.equal(data.drives[0].issueNumber, 3);
  assert.equal(h.state.closed[0].state, 'closed');
+});
+
+test('publishing a second issue with the same Drive saves both entries', async () => {
+ const first = { issueNumber: 3, ...parseSubmissionBody(BODY) };
+ const body = BODY.replace('Αντίγραφο μαθημάτων', 'Δεύτερη καταχώριση');
+ const h = harness({ catalogue: { schemaVersion: 1, drives: [first] }, body });
+ h.context.payload.issue = { number: 5, body };
+ const result = await publishDrive(h);
+ assert.equal(result.published, true);
+ const data = JSON.parse(Buffer.from(h.state.writes[0].content, 'base64').toString('utf8'));
+ assert.deepEqual(data.drives.map(item => item.issueNumber), [3, 5]);
+ assert.deepEqual(data.drives.map(item => item.name), ['Αντίγραφο μαθημάτων', 'Δεύτερη καταχώριση']);
+ assert.equal(h.state.closed[0].issue_number, 5);
 });
 test('rejects an issue changed after the approval comment', async () => {
  const h = harness({ body: BODY.replace('Αντίγραφο μαθημάτων', 'Changed') });
@@ -104,7 +142,7 @@ test('invalid metadata leaves the issue open and explains the problem', async ()
  assert.match(h.state.comments[0].body, /όχι ημερομηνία/);
 });
 test('unchanged data does not create another commit', async () => {
- const h = harness({ catalogue: { schemaVersion: 1, drives: [parseSubmissionBody(BODY)] } });
+ const h = harness({ catalogue: { schemaVersion: 1, drives: [{ issueNumber: 3, ...parseSubmissionBody(BODY) }] } });
  const result = await publishDrive(h);
  assert.equal(result.published, true);
  assert.equal(result.changed, false);
@@ -134,3 +172,4 @@ test('rejects publication from another branch', async () => {
  assert.equal((await publishDrive(h)).published, false);
  assert.equal(h.state.writes.length + h.state.comments.length, 0);
 });
+

@@ -33,7 +33,7 @@ export async function publishDrive({ github, context, core }) {
     const { data: file } = await github.rest.repos.getContent({ ...repo, path, ref: branch });
     if (Array.isArray(file) || file.type !== 'file' || file.encoding !== 'base64') throw new Error('Δεν διαβάστηκε ο κατάλογος.');
     const oldText = Buffer.from(file.content, 'base64').toString('utf8');
-    const next = mergeSubmission(JSON.parse(oldText), entry);
+    const next = mergeSubmission(JSON.parse(oldText), entry, issueNumber);
     const content = JSON.stringify(next, null, 2) + '\n';
     const changed = content !== oldText;
     let commitSha = '';
@@ -71,3 +71,4 @@ export async function publishDrive({ github, context, core }) {
     return NO_CHANGE;
   }
 }
+

@@ -1,4 +1,4 @@
-import { validateCatalogue, selectDrives, matchesQuery, uniqueCourseCount, formatDate, formatBytes } from './core.mjs';
+import { validateCatalogue, selectDrives, matchesQuery, uniqueCourseCount, formatDate, formatBytes } from './core.mjs?v=2.1.1';
 
 const byId = id => document.getElementById(id);
 const list = byId('drive-list');
@@ -91,13 +91,13 @@ function render() {
   if (!drives.length) {
     byId('empty-title').textContent = 'Ο κατάλογος ετοιμάζεται';
     byId('empty-description').textContent = 'Δεν έχει προστεθεί δημόσιος φάκελος ακόμη. Οι διαθέσιμοι σύνδεσμοι θα εμφανιστούν εδώ.';
-    byId('status').textContent = '0 καταχωρισμένα Drive';
+    byId('status').textContent = '0 καταχωρίσεις';
   } else if (!selected.length) {
     byId('empty-title').textContent = 'Δεν βρέθηκε Drive';
     byId('empty-description').textContent = 'Δοκίμασε ένα άλλο όνομα μαθήματος ή καθάρισε την αναζήτηση.';
     byId('status').textContent = 'Κανένα αποτέλεσμα για την αναζήτησή σου.';
   } else {
-    byId('status').textContent = selected.length + ' από ' + drives.length + ' Drive';
+    byId('status').textContent = selected.length + ' από ' + drives.length + ' καταχωρίσεις';
   }
 }
 
@@ -105,7 +105,7 @@ function renderTotals() {
   const totals = byId('totals');
   totals.replaceChildren();
   const driveCount = element('span', 'total-chip');
-  driveCount.append(element('strong', '', String(drives.length)), document.createTextNode('Drive'));
+  driveCount.append(element('strong', '', String(drives.length)), document.createTextNode('καταχωρίσεις'));
   const courseCount = uniqueCourseCount(drives);
   totals.append(driveCount);
   if (courseCount) {
@@ -159,3 +159,4 @@ byId('clear-search').addEventListener('click', () => {
 });
 byId('retry').addEventListener('click', loadCatalogue);
 loadCatalogue();
+

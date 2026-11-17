@@ -1,4 +1,4 @@
-const DRIVE_FIELDS = new Set(['name', 'url', 'description', 'courses', 'backupDate', 'sourceThrough', 'uploadedDate', 'sizeBytes']);
+const DRIVE_FIELDS = new Set(['issueNumber', 'name', 'url', 'description', 'courses', 'backupDate', 'sourceThrough', 'uploadedDate', 'sizeBytes']);
 
 export function normalize(value) {
   return String(value ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase('el').replace(/ς/g, 'σ').trim();
@@ -71,8 +71,15 @@ export function validateCatalogue(input) {
       const unknown = Object.keys(entry).filter(key => !DRIVE_FIELDS.has(key));
       if (unknown.length) throw new Error('Άγνωστα πεδία: ' + unknown.join(', '));
       const folder = parseDriveFolder(entry.url);
-      if (seen.has(folder.id)) throw new Error('Ο ίδιος φάκελος υπάρχει ήδη στον κατάλογο.');
-      seen.add(folder.id);
+      const issueNumber = entry.issueNumber;
+      if (issueNumber !== undefined && (!Number.isSafeInteger(issueNumber) || issueNumber < 1)) {
+        throw new Error('issueNumber: χρειάζεται θετικός ακέραιος αριθμός issue.');
+      }
+      const identity = issueNumber === undefined ? 'folder:' + folder.id : 'issue:' + issueNumber;
+      if (seen.has(identity)) throw new Error(issueNumber === undefined
+        ? 'Ο ίδιος φάκελος υπάρχει ήδη στον κατάλογο χωρίς ξεχωριστό issue.'
+        : 'Το issue #' + issueNumber + ' υπάρχει ήδη στον κατάλογο.');
+      seen.add(identity);
       const name = textField(entry.name, 'name', 120, true);
       const description = textField(entry.description, 'description', 2000);
       const rawCourses = entry.courses === undefined ? [] : entry.courses;
@@ -91,7 +98,7 @@ export function validateCatalogue(input) {
       if (backupDate && uploadedDate && uploadedDate < backupDate) throw new Error('uploadedDate: δεν μπορεί να είναι πριν από την ημερομηνία λήψης.');
       const sizeBytes = entry.sizeBytes ?? null;
       if (sizeBytes !== null && (!Number.isSafeInteger(sizeBytes) || sizeBytes < 0)) throw new Error('sizeBytes: χρειάζεται μη αρνητικός ακέραιος ή null.');
-      return { id: folder.id, name, url: folder.url, description, courses, backupDate, sourceThrough, uploadedDate, sizeBytes };
+      return { id: folder.id, ...(issueNumber === undefined ? {} : { issueNumber }), name, url: folder.url, description, courses, backupDate, sourceThrough, uploadedDate, sizeBytes };
     } catch (error) {
       throw new Error(label + ': ' + error.message);
     }
@@ -131,3 +138,4 @@ export function formatBytes(value) {
   const unit = Math.max(0, Math.min(4, Math.floor(Math.log(value) / Math.log(1000))));
   return new Intl.NumberFormat('el-GR', { maximumFractionDigits: 1 }).format(value / 1000 ** unit) + ' ' + units[unit];
 }
+

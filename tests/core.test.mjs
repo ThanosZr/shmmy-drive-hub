@@ -54,6 +54,25 @@ test('detects duplicate folders even when sharing query differs', () => {
   assert.throws(() => validateCatalogue({ schemaVersion: 1, drives: [drive(), drive({ url: folder + '?usp=sharing' })] }), /ίδιος φάκελος/);
 });
 
+test('distinct issues can refer to the same folder without losing either entry', () => {
+  const result = validateCatalogue({ schemaVersion: 1, drives: [
+    drive({ issueNumber: 3, name: 'Πρώτο αντίγραφο' }),
+    drive({ issueNumber: 5, name: 'Δεύτερο αντίγραφο', url: folder + '?usp=sharing' })
+  ] });
+  assert.deepEqual(result.drives.map(item => item.issueNumber), [3, 5]);
+  assert.equal(result.drives[0].url, result.drives[1].url);
+  assert.equal(selectDrives(result.drives, 'δευτερο').length, 1);
+});
+
+test('rejects duplicate issue identities even with different folders and invalid issue numbers', () => {
+  assert.throws(() => validateCatalogue({ schemaVersion: 1, drives: [
+    drive({ issueNumber: 3 }), drive({ issueNumber: 3, url: folder + '2' })
+  ] }), /issue #3/);
+  for (const issueNumber of [null, 0, -1, 1.5, '3', Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(() => validateCatalogue({ schemaVersion: 1, drives: [drive({ issueNumber })] }), /issueNumber/);
+  }
+});
+
 test('validates catalogue and field types without inventing data', () => {
   assert.deepEqual(validateCatalogue({ schemaVersion: 1, drives: [] }), { schemaVersion: 1, drives: [] });
   assert.throws(() => validateCatalogue({ schemaVersion: 2, drives: [] }));
@@ -80,3 +99,4 @@ test('sorts known backup dates before unknown dates and leaves input untouched',
   assert.deepEqual(selectDrives(data).map(item => item.name), ['Νέο', 'Παλαιό', 'Άγνωστο']);
   assert.deepEqual(data.map(item => item.name), ['Άγνωστο', 'Παλαιό', 'Νέο']);
 });
+
