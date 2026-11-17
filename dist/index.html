@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
   <title>ΣΗΜΜΥ · Backup Drives</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=2.0.1">
   <script type="module" src="./js/app.mjs"></script>
 </head>
 <body>
@@ -21,7 +21,10 @@
         <span class="brand-mark" aria-hidden="true">Σ</span>
         <span><strong>ΣΗΜΜΥ</strong><span class="brand-caption">Backup Drives</span></span>
       </a>
-      <a class="repository-link" href="https://github.com/ThanosZr/shmmy-drive-hub" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      <div class="header-actions">
+        <a class="button button-primary header-add" href="https://github.com/ThanosZr/shmmy-drive-hub/issues/new?template=add-drive.yml" target="_blank" rel="noopener noreferrer" aria-label="Προσθήκη Drive μέσω GitHub (νέα καρτέλα)"><span aria-hidden="true">+</span> Προσθήκη Drive</a>
+        <a class="repository-link" href="https://github.com/ThanosZr/shmmy-drive-hub" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      </div>
     </div>
   </header>
 
@@ -64,6 +67,10 @@
         <h3 id="empty-title">Ο κατάλογος ετοιμάζεται</h3>
         <p id="empty-description">Δεν έχει προστεθεί δημόσιος φάκελος ακόμη. Οι διαθέσιμοι σύνδεσμοι θα εμφανιστούν εδώ.</p>
         <button id="clear-search" class="button button-secondary" type="button" hidden>Καθαρισμός αναζήτησης</button>
+        <div class="empty-actions">
+          <a class="button button-primary" href="https://github.com/ThanosZr/shmmy-drive-hub/issues/new?template=add-drive.yml" target="_blank" rel="noopener noreferrer" aria-label="Προσθήκη Drive μέσω GitHub (νέα καρτέλα)">Προσθήκη Drive <span aria-hidden="true">↗</span></a>
+          <p class="submission-help">Η φόρμα ανοίγει στο GitHub και χρειάζεται λογαριασμό GitHub. Η καταχώριση εμφανίζεται μετά τον έλεγχο διαχειριστή.</p>
+        </div>
       </div>
 
       <div id="error-state" class="error-state" role="alert" hidden>
@@ -89,12 +96,12 @@
       <div class="footer-top">
         <p><strong>Κρατάς κι εσύ ένα αντίγραφο;</strong><br>Μπορείς να προτείνεις τον δημόσιο φάκελό σου για τον κατάλογο.</p>
         <div class="footer-links">
-          <a href="https://github.com/ThanosZr/shmmy-drive-hub/issues/new?template=add-drive.yml" target="_blank" rel="noopener noreferrer">Πρότεινε ένα Drive <span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/ThanosZr/shmmy-drive-hub/issues/new?template=add-drive.yml" target="_blank" rel="noopener noreferrer">Προσθήκη Drive στο GitHub <span aria-hidden="true">↗</span></a>
           <a href="./BACKUP-INFO.md" download="BACKUP-INFO.md">Πρότυπο BACKUP-INFO.md <span aria-hidden="true">↓</span></a>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>ΣΗΜΜΥ · Backup Drives · v2.0.0</span>
+        <span>ΣΗΜΜΥ · Backup Drives · v2.0.1</span>
         <span>Ανεξάρτητη πρωτοβουλία της κοινότητας. Δεν αποτελεί επίσημη υπηρεσία του ΕΜΠ.</span>
       </div>
     </div>
